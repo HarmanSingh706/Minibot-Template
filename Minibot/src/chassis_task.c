@@ -17,3 +17,24 @@ void Chassis_Ctrl_Loop()
 {
     // Control loop for the chassis
 }
+/*
+int main(void) {
+    float result[4];
+    float kinematicMap1[4][3] = {
+        {-0.09, 0.09, 0.75},
+        {-0.09, -0.09, 0.75},
+        {0.09, -0.09, 0.75},
+        {0.09, 0.09, 0.75}
+    };
+
+
+    kinematicMapping(kinematicMap1, 5, 7, 8, result);
+
+    printf("Resulting vector:\n");
+    for (int i = 0; i < 4; i++) {
+        printf("%f\n", result[i]);
+    }
+
+    return 0;
+}
+*\
