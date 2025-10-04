@@ -117,11 +117,7 @@
             "type": "pickString",
             "description": "Select the robot project to build",
             "options": [
-                "Swerve-Standard",
-                "Sentry",
-                "Wheel-Legged-Chassis",
-                //"Template"
-                // Add your other robot projects here
+                "Minibot",
             ]
         }
     ]
