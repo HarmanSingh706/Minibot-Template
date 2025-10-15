@@ -8,6 +8,24 @@ extern Remote_t g_remote;
 
 float chassis_rad;
 
+Motor_t* motor_w1;
+Motor_t* motor_w2;
+Motor_t* motor_w3;
+Motor_t* motor_w4;
+
+float kinematicMap1[4][3] = {
+        {-0.09, 0.09, 0.75},
+        {-0.09, -0.09, 0.75},
+        {0.09, -0.09, 0.75},
+        {0.09, 0.09, 0.75}
+    };
+
+void kinematicMapping(float kinematicMap[4][3], float x_speed, float y_speed, float angular_speed, float* result) {
+    for (int i = 0; i < 4; i++) {
+        result[i] = kinematicMap[i][0] * x_speed + kinematicMap[i][1] * y_speed + kinematicMap[i][2] * angular_speed;
+    }
+}
+
 void Chassis_Task_Init()
 {
 
@@ -67,7 +85,7 @@ void Chassis_Task_Init()
                 .kf = 0.0f,
                 .output_limit = M2006_MAX_CURRENT,
             },
-    };
+    }; 
 
     //create motor instances
     motor_w1 = DJI_Motor_Init(&chassis_w1, M2006); 
@@ -79,25 +97,15 @@ void Chassis_Task_Init()
 void Chassis_Ctrl_Loop()
 {
     // Control loop for the chassis
-}
-/*
-int main(void) {
     float result[4];
-    float kinematicMap1[4][3] = {
-        {-0.09, 0.09, 0.75},
-        {-0.09, -0.09, 0.75},
-        {0.09, -0.09, 0.75},
-        {0.09, 0.09, 0.75}
-    };
-
-
-    kinematicMapping(kinematicMap1, 5, 7, 8, result);
-
-    printf("Resulting vector:\n");
-    for (int i = 0; i < 4; i++) {
-        printf("%f\n", result[i]);
-    }
-
-    return 0;
+    kinematicMapping(kinematicMap1, 
+        g_robot_state.chassis.x_speed, 
+        g_robot_state.chassis.y_speed, 
+        g_robot_state.chassis.angular_speed, 
+        result);
+    DJI_Motor_Set_Velocity(motor_w1, result[0]);
+    DJI_Motor_Set_Velocity(motor_w2, result[1]);
+    DJI_Motor_Set_Velocity(motor_w3, result[2]);
+    DJI_Motor_Set_Velocity(motor_w4, result[3]);
+    
 }
-*\
