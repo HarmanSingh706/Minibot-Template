@@ -2,16 +2,17 @@
 
 #include "robot.h"
 #include "remote.h"
+#include "dji_motor.h"
 
 extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
 
 float chassis_rad;
 
-Motor_t* motor_w1;
-Motor_t* motor_w2;
-Motor_t* motor_w3;
-Motor_t* motor_w4;
+DJI_Motor_Handle_t* motor_w1;
+DJI_Motor_Handle_t* motor_w2;
+DJI_Motor_Handle_t* motor_w3;
+DJI_Motor_Handle_t* motor_w4;
 
 float kinematicMap1[4][3] = {
         {-0.09, 0.09, 0.75},
@@ -27,12 +28,12 @@ void kinematicMapping(float kinematicMap[4][3], float x_speed, float y_speed, fl
 }
 
 void Update_Chassis_State() {
-    float lx = g_remote.controller.left_stick.x / 660
-    float ly = g_remote.controller.left_stick.y / 660
+    float lx = g_remote.controller.left_stick.x / 660;
+    float ly = g_remote.controller.left_stick.y / 660;
 
-    g_robot_state.chassis.x_speed = lx * 1
-    g_robot_state.chassis.y_speed = ly * 1
-    g_robot_state.chassis.angular_speed = 0
+    g_robot_state.chassis.x_speed = lx * 1;
+    g_robot_state.chassis.y_speed = ly * 1;
+    g_robot_state.chassis.omega = 0;
 }
 
 void Chassis_Task_Init()
@@ -112,7 +113,7 @@ void Chassis_Ctrl_Loop()
     kinematicMapping(kinematicMap1, 
         g_robot_state.chassis.x_speed, 
         g_robot_state.chassis.y_speed, 
-        g_robot_state.chassis.angular_speed, 
+        g_robot_state.chassis.omega, 
         result);
     DJI_Motor_Set_Velocity(motor_w1, result[0]);
     DJI_Motor_Set_Velocity(motor_w2, result[1]);
