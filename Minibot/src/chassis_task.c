@@ -28,21 +28,12 @@ void kinematicMapping(float kinematicMap[4][3], float x_speed, float y_speed, fl
 }
 
 void Update_Chassis_State() {
-<<<<<<< HEAD
-    float lx = g_remote.controller.left_stick.x / 660
-    float ly = g_remote.controller.left_stick.y / 660
-
-    g_robot_state.chassis.x_speed = lx * 1
-    g_robot_state.chassis.y_speed = ly * 1
-    g_robot_state.chassis.angular_speed = 0
-=======
     float lx = g_remote.controller.left_stick.x / 660;
     float ly = g_remote.controller.left_stick.y / 660;
 
     g_robot_state.chassis.x_speed = lx * 1;
     g_robot_state.chassis.y_speed = ly * 1;
     g_robot_state.chassis.omega = 0;
->>>>>>> aa1725876aac9a9603469a66055f36d87f0fbf3a
 }
 
 void Chassis_Task_Init()
