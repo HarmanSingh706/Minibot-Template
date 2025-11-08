@@ -7,7 +7,13 @@
 extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
 
-float chassis_rad;
+#define WHEELBASE 0.26
+#define WHEEL_RADIUS 0.035
+#define SIN_THETA 0.707106781187
+#define COS_THETA 0.707106781187
+
+#define MAX_SPEED 1.65 // m/s
+#define RADS_TO_RPM 9.55
 
 DJI_Motor_Handle_t* motor_w1;
 DJI_Motor_Handle_t* motor_w2;
@@ -15,17 +21,17 @@ DJI_Motor_Handle_t* motor_w3;
 DJI_Motor_Handle_t* motor_w4;
 
 float kinematicMap1[4][3] = {
-        {-0.09, 0.09, 0.75},
-        {-0.09, -0.09, 0.75},
-        {0.09, -0.09, 0.75},
-        {0.09, 0.09, 0.75}
+        {-SIN_THETA/WHEEL_RADIUS, COS_THETA/WHEEL_RADIUS, WHEELBASE/WHEEL_RADIUS},
+        {-COS_THETA/WHEEL_RADIUS, -SIN_THETA/WHEEL_RADIUS, WHEELBASE/WHEEL_RADIUS},
+        {SIN_THETA/WHEEL_RADIUS, -COS_THETA/WHEEL_RADIUS, WHEELBASE/WHEEL_RADIUS},
+        {COS_THETA/WHEEL_RADIUS, SIN_THETA/WHEEL_RADIUS, WHEELBASE/WHEEL_RADIUS}
     };
 
 float result[4];    
 
 void kinematicMapping(float kinematicMap[4][3], float x_speed, float y_speed, float angular_speed, float* result) {
     for (int i = 0; i < 4; i++) {
-        result[i] = kinematicMap[i][0] * x_speed + kinematicMap[i][1] * y_speed + kinematicMap[i][2] * angular_speed;
+        result[i] = RADS_TO_RPM * (kinematicMap[i][0] * x_speed + kinematicMap[i][1] * y_speed + kinematicMap[i][2] * angular_speed);
     }
 }
 
@@ -33,8 +39,8 @@ void Update_Chassis_State() {
     float lx = g_remote.controller.left_stick.x / 660.0;
     float ly = g_remote.controller.left_stick.y / 660.0;
 
-    g_robot_state.chassis.x_speed = lx * 3.0;
-    g_robot_state.chassis.y_speed = ly * 3.0;
+    g_robot_state.chassis.x_speed = -lx * MAX_SPEED;
+    g_robot_state.chassis.y_speed = ly * MAX_SPEED;
     g_robot_state.chassis.omega = 0;
 }
 
@@ -53,7 +59,7 @@ void Chassis_Task_Init()
                 .kp = 500.0f,
                 .kd = 0.0f,
                 .kf = 0.0f,
-                .output_limit = M2006_MAX_CURRENT, // m2006 is the motor
+                .output_limit = M2006_MAX_CURRENT_INT, // m2006 is the motor
             },
     };
     Motor_Config_t chassis_w2 = {
@@ -67,7 +73,7 @@ void Chassis_Task_Init()
                 .kp = 500.0f,
                 .kd = 0.0f,
                 .kf = 0.0f,
-                .output_limit = M2006_MAX_CURRENT,
+                .output_limit = M2006_MAX_CURRENT_INT,
             },
     };
     Motor_Config_t chassis_w3 = {
@@ -81,7 +87,7 @@ void Chassis_Task_Init()
                 .kp = 500.0f,
                 .kd = 0.0f,
                 .kf = 0.0f,
-                .output_limit = M2006_MAX_CURRENT,
+                .output_limit = M2006_MAX_CURRENT_INT,
             },
     };
     Motor_Config_t chassis_w4 = {
@@ -95,7 +101,7 @@ void Chassis_Task_Init()
                 .kp = 500.0f,
                 .kd = 0.0f,
                 .kf = 0.0f,
-                .output_limit = M2006_MAX_CURRENT,
+                .output_limit = M2006_MAX_CURRENT_INT,
             },
     }; 
 
@@ -111,12 +117,12 @@ void Chassis_Ctrl_Loop()
     // Control loop for the chassis
     Update_Chassis_State();
 
-    
     kinematicMapping(kinematicMap1, 
         g_robot_state.chassis.x_speed, 
         g_robot_state.chassis.y_speed, 
         g_robot_state.chassis.omega, 
         result);
+        
     DJI_Motor_Set_Velocity(motor_w1, result[0]);
     DJI_Motor_Set_Velocity(motor_w2, result[1]);
     DJI_Motor_Set_Velocity(motor_w3, result[2]);
