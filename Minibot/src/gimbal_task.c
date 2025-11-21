@@ -3,9 +3,13 @@
 #include "robot.h"
 #include "remote.h"
 #include "user_math.h"
+#include "chassis_task.h"
+#include "dji_motor.h"
 
 extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
+extern Gimbal_Target_t g_gimbal_state;
+
 
 DJI_Motor_Handle_t* motor_w5;
 
@@ -38,7 +42,7 @@ void Gimbal_Task_Init()
 void Update_Gimbal_State() {
     float gx = g_remote.controller.right_stick.x / 500;
 
-    g_robot_state.gimbal.yaw_angle = gx * GEARRATIO;
+    g_gimbal_state.yaw_velocity = gx * GEARRATIO;
 }
 
 void Gimbal_Ctrl_Loop()

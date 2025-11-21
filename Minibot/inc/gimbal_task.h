@@ -15,4 +15,6 @@ typedef struct
 void Gimbal_Task_Init(void);
 void Gimbal_Ctrl_Loop(void);
 
+extern Gimbal_Target_t g_gimbal_state;
+
 #endif // GIMBAL_TASK_H
