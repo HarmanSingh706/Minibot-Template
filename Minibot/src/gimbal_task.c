@@ -8,15 +8,17 @@
 
 extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
-extern Gimbal_Target_t g_gimbal_state;
+extern Gimbal_Target_t g_gimbal_target;
 
+#include "dji_motor.h"
+
+#define MAX_SPEED 100
+#define GEARRATIO 1.5
+#define JOYSTICK_MAX 660.0
 
 DJI_Motor_Handle_t* motor_w5;
 
-#define GEARRATIO 1.5;
-
-
-
+float gimbal_velocity = 0.0;
 
 void Gimbal_Task_Init()
 {
@@ -40,13 +42,14 @@ void Gimbal_Task_Init()
 }
 
 void Update_Gimbal_State() {
-    float gx = g_remote.controller.right_stick.x / 500;
-
-    g_gimbal_state.yaw_velocity = gx * GEARRATIO;
+    float gx = g_remote.controller.right_stick.x / JOYSTICK_MAX;
+    gimbal_velocity = gx * MAX_SPEED;
 }
 
 void Gimbal_Ctrl_Loop()
 {
     // Control loop for gimbal
     Update_Gimbal_State();
+
+    DJI_Motor_Set_Velocity(motor_w5, gimbal_velocity);
 }

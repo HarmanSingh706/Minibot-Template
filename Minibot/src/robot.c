@@ -107,6 +107,7 @@ void Process_Chassis_Control()
 void Process_Gimbal_Control()
 {
      // USER CODE HERE
+     Gimbal_Ctrl_Loop();
 }
 
 void Process_Launch_Control()

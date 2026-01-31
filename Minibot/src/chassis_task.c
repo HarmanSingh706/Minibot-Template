@@ -12,8 +12,9 @@ extern Remote_t g_remote;
 #define SIN_THETA 0.707106781187
 #define COS_THETA 0.707106781187
 
-#define MAX_SPEED 1.65 // m/s
+#define MAX_SPEED 1.55 // m/s
 #define RADS_TO_RPM 9.55
+#define JOYSTICK_MAX 660.0
 
 DJI_Motor_Handle_t* motor_w1;
 DJI_Motor_Handle_t* motor_w2;
@@ -36,8 +37,8 @@ void kinematicMapping(float kinematicMap[4][3], float x_speed, float y_speed, fl
 }
 
 void Update_Chassis_State() {
-    float lx = g_remote.controller.left_stick.x / 660.0;
-    float ly = g_remote.controller.left_stick.y / 660.0;
+    float lx = g_remote.controller.left_stick.x / JOYSTICK_MAX;
+    float ly = g_remote.controller.left_stick.y / JOYSTICK_MAX;
 
     g_robot_state.chassis.x_speed = -lx * MAX_SPEED;
     g_robot_state.chassis.y_speed = ly * MAX_SPEED;
@@ -62,7 +63,7 @@ void Chassis_Task_Init()
                 .output_limit = M2006_MAX_CURRENT_INT, // m2006 is the motor
             },
     };
-    Motor_Config_t chassis_w2 = {
+    Motor_Config_t chassis_w2 = {   //Secret message
         .can_bus = 1,
         .speed_controller_id = 2,
         .offset = 0,
